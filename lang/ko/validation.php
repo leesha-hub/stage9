@@ -124,12 +124,9 @@ return [
 
     'custom' => [
         'email' => [
-            'required' => '이메일은 필수 입력 항목입니다.',
             'email' => '유효한 이메일 주소여야 합니다.',
         ],
-        'password' => [
-            'required' => '비밀번호는 필수 입력 항목입니다.',
-        ],
+        'password' => [],
     ],
 
     /*
@@ -139,6 +136,7 @@ return [
     */
 
     'attributes' => [
+        'name' => '이름',
         'email' => '이메일',
         'password' => '비밀번호',
     ],

@@ -16,7 +16,7 @@ class LoginController extends Controller
         return view('login.index');
     }
 
-    /** 
+    /**
      * 로그인
      */
     public function login(Request $request)
@@ -40,7 +40,7 @@ class LoginController extends Controller
         ])->onlyInput('email');
     }
 
-    /** 
+    /**
      * 로그아웃
      */
     public function logout(Request $request)
@@ -48,7 +48,7 @@ class LoginController extends Controller
         Auth::logout();
 
         // 세션 무효화, CSRF 토큰 재생성
-        $request->session()->invalidate();    
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('home');

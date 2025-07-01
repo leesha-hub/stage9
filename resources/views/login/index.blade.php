@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    로그인 index 페이지
+    로그인 페이지
     <form action={{ route('login.process') }} method="POST">
         @csrf
         <table border="1">
@@ -19,7 +19,7 @@
             <tr>
                 <th>비밀번호</th>
                 <td>
-                    <input type="text" name="password" value="" />
+                    <input type="password" name="password" value="" autocomplete="new-password" />
                     @if ($errors->has('password'))
                         <div style="color: red; font-size: 12px; margin-top: 5px;">
                             {{ $errors->first('password') }}

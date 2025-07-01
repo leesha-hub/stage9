@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -30,16 +31,43 @@ class RegisterController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required'
+            'name' => [
+                'required',
+                'string',
+                'regex:/^[가-힣a-zA-Z\s\-·]{2,20}$/u',
+            ],
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email',
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:20',
+                'regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+=-]).{8,}$/',
+            ],
         ]);
 
-        User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return back()->withErrors([
+                    'email' => '이미 등록된 이메일입니다.',
+                ])->withInput($request->only(['name', 'email']));
+            }
+
+            // 그 외 DB 오류
+            return back()->withErrors([
+                'register' => '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.',
+            ])->withInput($request->only(['name', 'email']));
+        }
 
         return redirect()->route('login.index');
     }
