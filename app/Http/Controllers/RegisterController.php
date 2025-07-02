@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EmailVerification;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\EmailVerification;
 
 class RegisterController extends Controller
 {
@@ -55,7 +55,7 @@ class RegisterController extends Controller
             ->whereNotNull('verified_at')
             ->first();
 
-        if (!$verification) {
+        if (! $verification) {
             return back()->withErrors(['register' => '이메일 인증을 먼저 완료해 주세요.']);
         }
 

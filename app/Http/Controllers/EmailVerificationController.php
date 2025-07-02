@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
-use App\Models\EmailVerification;
 use App\Mail\EmailVerifyMail;
+use App\Models\EmailVerification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class EmailVerificationController extends Controller
 {
     public function send(Request $request)
     {
         $request->validate([
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
         try {
@@ -28,13 +27,13 @@ class EmailVerificationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => '이메일로 인증번호를 전송했습니다.'
+                'message' => '이메일로 인증번호를 전송했습니다.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => '메일 발송에 실패했습니다.',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -43,7 +42,7 @@ class EmailVerificationController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'code'  => 'required|string|size:6',
+            'code' => 'required|string|size:6',
         ]);
 
         $verification = EmailVerification::where('email', $request->email)
@@ -52,6 +51,7 @@ class EmailVerificationController extends Controller
 
         if ($verification) {
             $verification->update(['verified_at' => now()]);
+
             return response()->json([
                 'success' => true,
                 'message' => '이메일 인증이 완료되었습니다!',
