@@ -23,7 +23,18 @@
             <tr>
                 <th>이메일</th>
                 <td>
-                    <input type="text" name="email" value="{{ old('email') }}" />
+                    <input type="text" id="email" name="email" value="{{ old('email') }}" />
+                    <button type="button" onclick="requestEmailVerification()">인증코드 받기</button>
+                    <div id="verify-msg" style="color: green; font-size: 12px; margin-top: 5px;"></div>
+
+                    <input type="text" id="code" name="code" placeholder="인증번호" required>
+                    <button type="button" onclick="verifyEmailCode()">인증 확인</button>
+
+                    @if (session('verified'))
+                        <div style="color:
+                            green;">{{ session('verified') }}</div>
+                    @endif
+
                     @if ($errors->has('email'))
                         <div style="color: red; font-size: 12px; margin-top: 5px;">
                             {{ $errors->first('email') }}
@@ -59,3 +70,83 @@
         </table>
     </form>
 @endsection
+
+<script>
+    function requestEmailVerification() {
+        const email = document.getElementById('email').value;
+        const msgBox = document.getElementById("verify-msg");
+
+        if (!email) {
+            msgBox.innerText = "이메일을 입력해주세요.";
+            return;
+        }
+
+        fetch("/email/send-code", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || "인증코드 발송에 실패했습니다.");
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                msgBox.innerText = data.message || "인증코드를 발송했습니다.";
+                msgBox.style.color = "green";
+            })
+            .catch(error => {
+                msgBox.innerText = error.message;
+                msgBox.style.color = "red";
+            });
+    }
+
+    function verifyEmailCode() {
+        const email = document.getElementById('email').value;
+        const code = document.getElementById('code').value;
+        const msgBox = document.getElementById("verify-msg");
+
+        if (!email || !code) {
+            msgBox.innerText = "이메일과 인증번호를 모두 입력해주세요.";
+            msgBox.style.color = "red";
+            return;
+        }
+
+        fetch("/email/verify-code", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    code: code
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || "인증에 실패했습니다.");
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                msgBox.innerText = data.message || "인증에 성공했습니다.";
+                msgBox.style.color = "green";
+            })
+            .catch(error => {
+                msgBox.innerText = error.message;
+                msgBox.style.color = "red";
+            });
+    }
+</script>

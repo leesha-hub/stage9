@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\EmailVerification;
 
 class RegisterController extends Controller
 {
@@ -49,6 +50,14 @@ class RegisterController extends Controller
                 'regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+=-]).{8,}$/',
             ],
         ]);
+
+        $verification = EmailVerification::where('email', $request->email)
+            ->whereNotNull('verified_at')
+            ->first();
+
+        if (!$verification) {
+            return back()->withErrors(['register' => '이메일 인증을 먼저 완료해 주세요.']);
+        }
 
         try {
             User::create([
