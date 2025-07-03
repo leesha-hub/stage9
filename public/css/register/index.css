@@ -1,0 +1,22 @@
+.hint {
+    display: block;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.success {
+    color: green;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.verify-msg {
+    font-size: 12px;
+    margin-top: 5px;
+}
