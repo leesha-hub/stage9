@@ -4,16 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Mail\EmailVerifyMail;
 use App\Models\EmailVerification;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class EmailVerificationController extends Controller
 {
     public function send(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
         ]);
+
+        if ($validator->fails()) {
+            throw new HttpResponseException(response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first('email'),
+            ], 422));
+        }
 
         try {
             $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
