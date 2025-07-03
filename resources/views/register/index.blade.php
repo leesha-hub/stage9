@@ -32,7 +32,7 @@
                     <button type="button" onclick="requestEmailVerification()">인증코드 받기</button>
                     <div class="verify-msg" id="verify-msg"></div>
 
-                    <input type="text" id="code" name="code" placeholder="인증번호" />
+                    <input type="text" id="code" name="code" value="{{ old('code') }}" placeholder="인증번호" />
                     <button type="button" onclick="verifyEmailCode()">인증 확인</button>
 
                     @if ($errors->has('email'))

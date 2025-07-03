@@ -56,7 +56,7 @@ class RegisterController extends Controller
             ->first();
 
         if (! $verification) {
-            return back()->withErrors(['register' => '이메일 인증을 먼저 완료해 주세요.']);
+            return back()->withErrors(['register' => '이메일 인증을 먼저 완료해 주세요.'])->withInput($request->only(['name', 'email', 'code']));
         }
 
         try {
@@ -69,13 +69,13 @@ class RegisterController extends Controller
             if ($e->errorInfo[1] == 1062) {
                 return back()->withErrors([
                     'email' => '이미 등록된 이메일입니다.',
-                ])->withInput($request->only(['name', 'email']));
+                ])->withInput($request->only(['name', 'email', 'code']));
             }
 
             // 그 외 DB 오류
             return back()->withErrors([
                 'register' => '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.',
-            ])->withInput($request->only(['name', 'email']));
+            ])->withInput($request->only(['name', 'email', 'code']));
         }
 
         return redirect()->route('login.index');
